@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.shop.backend.search.chain.SearchChain;
 import ru.shop.backend.search.model.*;
 import ru.shop.backend.search.repository.ItemDbRepository;
 import ru.shop.backend.search.repository.ItemRepository;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class SearchService {
     private final ItemRepository repo;
     private final ItemDbRepository repoDb;
+    private final SearchChain searchChain;
 
     private Pageable pageable = PageRequest.of(0, 150);
     private Pageable pageableSmall = PageRequest.of(0, 10);
@@ -33,23 +35,24 @@ public class SearchService {
         return pattern.matcher(strNum).matches();
     }
     public synchronized SearchResult getSearchResult(Integer regionId, String text){
-        List<CatalogueElastic> result = null;
-        if (isNumeric(text)) {
-            Integer itemId = repoDb.findBySku(text).stream().findFirst().orElse(null);
-            if (itemId == null) {
-                var catalogue = getByName(text);
-                if (catalogue.size() > 0) {
-                    result = catalogue;
-                }
-            }
-            try {
-                result = getByItemId(itemId.toString());
-            } catch (Exception e) {
-            }
-        }
-        if(result == null) {
-            result = getAll(text);
-        }
+//        List<CatalogueElastic> result = null;
+//        if (isNumeric(text)) {
+//            Integer itemId = repoDb.findBySku(text).stream().findFirst().orElse(null);
+//            if (itemId == null) {
+//                var catalogue = getByName(text);
+//                if (catalogue.size() > 0) {
+//                    result = catalogue;
+//                }
+//            }
+//            try {
+//                result = getByItemId(itemId.toString());
+//            } catch (Exception e) {
+//            }
+//        }
+//        if(result == null) {
+//            result = getAll(text);
+//        }
+        var result = searchChain.searchByText(text, pageable);
         List<Item> items = repoDb.findByIds(regionId,
                     result.stream()
                             .flatMap(category -> category.getItems().stream())
