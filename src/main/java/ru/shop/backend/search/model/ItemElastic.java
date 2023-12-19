@@ -12,15 +12,11 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(indexName = "item", createIndex = true)
+@Document(indexName = "item")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ItemElastic {
@@ -45,31 +41,4 @@ public class ItemElastic {
 
     @Field(type = FieldType.Text)
     private String description;
-
-    public ItemElastic(ItemEntity entity) {
-        this.description = buildDescription(entity.getDescription());
-        this.fulltext = entity.getCatalogue()+ " " + entity.getType() + " " + entity.getName() + " " + description;
-        this.name = entity.getName().replace(entity.getBrand(),"").trim();
-        this.itemId = entity.getItemId();
-        this.catalogueId = entity.getCatalogueId();
-        this.catalogue = entity.getCatalogue();
-        this.brand = entity.getBrand();
-        this.type = entity.getType();
-    }
-    public String buildDescription(String description){
-        return Arrays.stream(description.split(";")).map(
-                d -> {
-                    d = d.toLowerCase(Locale.ROOT);
-                    if(d.contains(": нет"))
-                        return null;
-                    if(d.contains(": -"))
-                        return null;
-                    if(d.contains(": есть"))
-                        return d.replace(": есть", "");
-                    if(d.contains(": 0 "))
-                        return null;
-                    return d.replace(":","");
-                }
-        ).filter( d -> d != null).collect(Collectors.joining());
-    }
 }

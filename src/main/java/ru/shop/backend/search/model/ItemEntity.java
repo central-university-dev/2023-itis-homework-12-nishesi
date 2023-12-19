@@ -8,10 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
 @NoArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "item")
 public class ItemEntity {
     private String name;
     private String brand;
