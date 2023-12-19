@@ -1,6 +1,8 @@
 package ru.shop.backend.search.chain;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import ru.shop.backend.search.model.CatalogueElastic;
@@ -14,8 +16,11 @@ import static ru.shop.backend.search.service.SearchService.isNumeric;
 @Component
 @RequiredArgsConstructor
 public class SearchChain {
-    private final SearchService service;
-    private final ItemDbRepository repoDb;
+    @Lazy
+    @Autowired
+    private SearchService service;
+    @Autowired
+    private ItemDbRepository repoDb;
 
     public List<CatalogueElastic> searchByText(String text, Pageable pageable) {
         if (isNumeric(text)) {

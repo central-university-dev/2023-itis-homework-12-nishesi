@@ -1,9 +1,6 @@
 package ru.shop.backend.search;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,10 +32,11 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = SearchApplication.class)
 @ContextConfiguration(initializers = {SearchServiceIntegrationTest.TestContextInitializer.class})
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SearchServiceIntegrationTest {
     @Container
     static final PostgreSQLContainer<?> postgres = new SimplePostgresContainer()
-            .withInitScript("test-schema.sql");
+            .withInitScript("SearchService-test-schema.sql");
 
     @MockBean
     ItemRepository itemElasticRepository;
@@ -193,7 +191,7 @@ public class SearchServiceIntegrationTest {
     }
 
     @Nested
-    class bug_fix {
+    class bug_fix_tests {
         @Nested
         class test_items {
             @Test
